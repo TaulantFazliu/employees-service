@@ -1,6 +1,6 @@
 package com.employeesService.EmployeesService.exception;
 
-public class DepartmentException {
+public class ApiError {
 
     private int statusCode;
     private String message;

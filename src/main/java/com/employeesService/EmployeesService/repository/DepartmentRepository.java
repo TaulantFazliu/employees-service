@@ -13,8 +13,6 @@ public interface DepartmentRepository {
 
     Optional<Department> findById(String deptNo);
 
-    Department update(Department department);
-
     void deleteById(String deptNo);
 
 }

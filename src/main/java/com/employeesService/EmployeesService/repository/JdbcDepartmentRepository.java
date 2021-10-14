@@ -25,7 +25,7 @@ public class JdbcDepartmentRepository implements DepartmentRepository {
 
     @Override
     public Department save(Department department) {
-        String sql = "Insert into departments(dept_no, dept_name) values (:deptNo,:deptName)";
+        String sql = "Insert into departments(dept_no, dept_name) values (:deptNo,:deptName) on conflict (demp_no) do update set dept_name = :deptName";
         MapSqlParameterSource paramSource = new MapSqlParameterSource("deptNo", department.getDeptNo()).addValue("deptName", department.getDeptName());
         namedJdbcTemplate.update(sql, paramSource);
         return department;
@@ -46,14 +46,6 @@ public class JdbcDepartmentRepository implements DepartmentRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public Department update(Department department) {
-        String sql = "update departments set dept_name = :deptName where dept_no = :deptNo";
-        MapSqlParameterSource paramSource = new MapSqlParameterSource("deptName", department.getDeptName()).addValue("deptNo", department.getDeptNo());
-        namedJdbcTemplate.update(sql, paramSource);
-        return department;
     }
 
     @Override

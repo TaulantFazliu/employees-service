@@ -1,6 +1,5 @@
 package com.employeesService.EmployeesService.model;
 
-
 public class Department {
 
     private String deptNo;

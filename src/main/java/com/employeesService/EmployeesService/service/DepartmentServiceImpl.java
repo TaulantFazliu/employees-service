@@ -36,8 +36,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department update(String deptNo, Department department) {
-        department.setDeptNo(deptNo);
-        return departmentRepository.update(department);
+        Department foundDepartment = departmentRepository.findById(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
+        foundDepartment.setDeptName(department.getDeptName());
+        return departmentRepository.save(foundDepartment);
     }
 
     @Override
