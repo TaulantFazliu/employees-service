@@ -6,7 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public class JdbcEmployeeRepository implements EmployeeRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -25,6 +24,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
     }
 
     @Override
+    @Transactional
     public Employee save(Employee employee) {
         String sql = "Insert into employees(emp_no, birth_date,first_name, last_name, gender, hire_date) values (:empNo,:birthDate, :firstName, :lastName, cast(:gender as gender), :hireDate) " +
                 "on conflict (emp_no) do update set birth_date = :birthDate, first_name= :firstName, last_name= :lastName, gender= cast(:gender as gender), hire_date= :hireDate";
@@ -37,6 +37,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
         namedParameterJdbcTemplate.update(sql, paramSource);
         return employee;
     }
+
 
     @Override
     public List<Employee> findAll() {
@@ -56,6 +57,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long empNo) {
         MapSqlParameterSource paramSource = new MapSqlParameterSource("empNo", empNo);
         namedParameterJdbcTemplate.update("delete from employees where emp_no= :empNo", paramSource);
@@ -73,5 +75,8 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
             employee.setHireDate(rs.getObject("hire_date", LocalDate.class));
             return employee;
         }
+
     }
 }
+
+
