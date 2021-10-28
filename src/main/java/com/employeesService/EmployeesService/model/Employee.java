@@ -1,8 +1,12 @@
 package com.employeesService.EmployeesService.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "employees")
 public class Employee {
@@ -22,6 +26,14 @@ public class Employee {
     private Gender gender;
     @Column(name = "hire_date")
     private LocalDate hireDate;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "emp_no")
+    @JsonIgnore
+    private List<Salary> salaries = new ArrayList<>();
+
+    public List<Salary> getSalaries() {
+        return salaries;
+    }
 
     public Long getEmpNo() {
         return empNo;
@@ -69,6 +81,10 @@ public class Employee {
 
     public void setHireDate(LocalDate hireDate) {
         this.hireDate = hireDate;
+    }
+
+    public void assignSalary(Salary salary) {
+        salaries.add(salary);
     }
 
 }

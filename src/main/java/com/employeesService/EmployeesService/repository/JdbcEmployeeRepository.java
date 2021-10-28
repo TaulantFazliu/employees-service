@@ -57,6 +57,11 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
     }
 
     @Override
+    public Optional<Employee> findByIdWithSalaries(Long empNo) {
+        return Optional.empty();
+    }
+
+    @Override
     @Transactional
     public void deleteById(Long empNo) {
         MapSqlParameterSource paramSource = new MapSqlParameterSource("empNo", empNo);

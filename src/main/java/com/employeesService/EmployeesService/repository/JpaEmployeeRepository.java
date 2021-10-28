@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +17,8 @@ public class JpaEmployeeRepository implements EmployeeRepository {
     private final EntityManager entityManager;
 
     @Autowired
-    public JpaEmployeeRepository(EntityManager entityManager){
-        this.entityManager=entityManager;
+    public JpaEmployeeRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -28,17 +28,25 @@ public class JpaEmployeeRepository implements EmployeeRepository {
         return employee;
     }
 
-
     @Override
     public List<Employee> findAll() {
         return this.entityManager.createQuery("select e from employees e", Employee.class).getResultList();
-
     }
 
     @Override
     public Optional<Employee> findById(Long emptNo) {
         try {
             return Optional.ofNullable(this.entityManager.find(Employee.class, emptNo));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Employee> findByIdWithSalaries(Long empNo) {
+        try {
+            TypedQuery<Employee> query = this.entityManager.createQuery("SELECT e FROM employees e JOIN FETCH e.salaries WHERE e.empNo = :empNo", Employee.class).setParameter("empNo", empNo);
+            return Optional.ofNullable(query.getSingleResult());
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

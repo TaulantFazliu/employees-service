@@ -13,5 +13,7 @@ public interface EmployeeRepository {
 
     Optional<Employee> findById(Long emptNo);
 
+    Optional<Employee> findByIdWithSalaries(Long empNo);
+
     void deleteById(Long empNo);
 }
