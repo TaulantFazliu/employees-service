@@ -8,27 +8,34 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "employees")
+@Entity
+@Table(name = "employees")
 public class Employee {
 
     public enum Gender {M, F}
 
     @Id
     private Long empNo;
+
     @Column(name = "birth_date")
     private LocalDate birthDate;
+
     @Column(name = "first_name")
     private String firstName;
+
     @Column(name = "last_name")
     private String lastName;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")
     private Gender gender;
+
     @Column(name = "hire_date")
     private LocalDate hireDate;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "emp_no")
+
     @JsonIgnore
+    @JoinColumn(name = "emp_no")
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Salary> salaries = new ArrayList<>();
 
     public List<Salary> getSalaries() {

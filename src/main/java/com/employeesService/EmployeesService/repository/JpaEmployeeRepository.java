@@ -2,7 +2,6 @@ package com.employeesService.EmployeesService.repository;
 
 import com.employeesService.EmployeesService.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,26 +29,18 @@ public class JpaEmployeeRepository implements EmployeeRepository {
 
     @Override
     public List<Employee> findAll() {
-        return this.entityManager.createQuery("select e from employees e", Employee.class).getResultList();
+        return this.entityManager.createQuery("select e from Employee e", Employee.class).getResultList();
     }
 
     @Override
     public Optional<Employee> findById(Long emptNo) {
-        try {
-            return Optional.ofNullable(this.entityManager.find(Employee.class, emptNo));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(this.entityManager.find(Employee.class, emptNo));
     }
 
     @Override
     public Optional<Employee> findByIdWithSalaries(Long empNo) {
-        try {
-            TypedQuery<Employee> query = this.entityManager.createQuery("SELECT e FROM employees e JOIN FETCH e.salaries WHERE e.empNo = :empNo", Employee.class).setParameter("empNo", empNo);
-            return Optional.ofNullable(query.getSingleResult());
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        TypedQuery<Employee> query = this.entityManager.createQuery("SELECT e FROM Employee e JOIN FETCH e.salaries s WHERE e.empNo = :empNo AND s.toDate IS NULL", Employee.class).setParameter("empNo", empNo);
+        return Optional.ofNullable(query.getSingleResult());
     }
 
     @Override
@@ -58,5 +49,4 @@ public class JpaEmployeeRepository implements EmployeeRepository {
         Employee employee = this.entityManager.find(Employee.class, empNo);
         this.entityManager.remove(employee);
     }
-
 }

@@ -13,6 +13,7 @@ public interface DepartmentRepository {
 
     Optional<Department> findById(String deptNo);
 
-    void deleteById(String deptNo);
+    Optional<Department> findByIdWithEmployees(String deptNo);
 
+    void deleteById(String deptNo);
 }

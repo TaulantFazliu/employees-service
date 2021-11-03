@@ -5,6 +5,7 @@ import com.employeesService.EmployeesService.model.Department;
 import com.employeesService.EmployeesService.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,30 +20,33 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public Department save(Department department) {
-        return departmentRepository.save(department);
+        return this.departmentRepository.save(department);
     }
 
     @Override
     public List<Department> getAll() {
-        return departmentRepository.findAll();
+        return this.departmentRepository.findAll();
     }
 
     @Override
     public Department getById(String deptNo) {
-        Department department = departmentRepository.findById(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
+        Department department = this.departmentRepository.findById(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
         return department;
     }
 
     @Override
+    @Transactional
     public Department update(String deptNo, Department department) {
-        Department foundDepartment = departmentRepository.findById(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
+        Department foundDepartment = this.departmentRepository.findById(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
         foundDepartment.setDeptName(department.getDeptName());
-        return departmentRepository.save(foundDepartment);
+        return this.departmentRepository.save(foundDepartment);
     }
 
     @Override
+    @Transactional
     public void delete(String deptNo) {
-        departmentRepository.deleteById(deptNo);
+        this.departmentRepository.deleteById(deptNo);
     }
 }

@@ -20,7 +20,6 @@ public class SalaryServiceImpl implements SalaryService {
         this.employeeRepository = employeeRepository;
     }
 
-
     @Override
     @Transactional
     public Salary assignSalaryToEmployee(Long empNo, Salary salaryToAdd) {

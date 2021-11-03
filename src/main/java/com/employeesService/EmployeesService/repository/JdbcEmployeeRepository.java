@@ -2,7 +2,6 @@ package com.employeesService.EmployeesService.repository;
 
 import com.employeesService.EmployeesService.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -34,14 +33,13 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
                 .addValue("lastName", employee.getLastName())
                 .addValue("gender", employee.getGender().toString())
                 .addValue("hireDate", employee.getHireDate());
-        namedParameterJdbcTemplate.update(sql, paramSource);
+        this.namedParameterJdbcTemplate.update(sql, paramSource);
         return employee;
     }
 
-
     @Override
     public List<Employee> findAll() {
-        List<Employee> employees = namedParameterJdbcTemplate.query("select * from employees", new JdbcEmployeeRepository.EmployeeRowMapper());
+        List<Employee> employees = this.namedParameterJdbcTemplate.query("select * from employees", new JdbcEmployeeRepository.EmployeeRowMapper());
         return employees;
     }
 
@@ -49,11 +47,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
     public Optional<Employee> findById(Long emptNo) {
         String sql = ("select * from employees where emp_no= :empNo");
         MapSqlParameterSource paramSource = new MapSqlParameterSource("empNo", emptNo);
-        try {
-            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, paramSource, new JdbcEmployeeRepository.EmployeeRowMapper()));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(this.namedParameterJdbcTemplate.queryForObject(sql, paramSource, new JdbcEmployeeRepository.EmployeeRowMapper()));
     }
 
     @Override
@@ -65,7 +59,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
     @Transactional
     public void deleteById(Long empNo) {
         MapSqlParameterSource paramSource = new MapSqlParameterSource("empNo", empNo);
-        namedParameterJdbcTemplate.update("delete from employees where emp_no= :empNo", paramSource);
+        this.namedParameterJdbcTemplate.update("delete from employees where emp_no= :empNo", paramSource);
     }
 
     private static final class EmployeeRowMapper implements RowMapper<Employee> {
@@ -80,7 +74,6 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
             employee.setHireDate(rs.getObject("hire_date", LocalDate.class));
             return employee;
         }
-
     }
 }
 

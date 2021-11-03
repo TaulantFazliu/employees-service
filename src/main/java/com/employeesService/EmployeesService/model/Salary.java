@@ -1,13 +1,11 @@
 package com.employeesService.EmployeesService.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-@Entity(name = "salaries")
+@Entity
+@Table(name = "salaries")
 @IdClass(Salary.SalaryId.class)
 public class Salary {
 
@@ -20,6 +18,7 @@ public class Salary {
     @Id
     @Column(name = "from_date")
     private LocalDate fromDate;
+
     @Column(name = "to_date")
     private LocalDate toDate;
 
@@ -70,12 +69,9 @@ public class Salary {
         public SalaryId() {
         }
 
-        ;
-
         public SalaryId(Long empNo, LocalDate fromDate) {
             this.empNo = empNo;
             this.fromDate = fromDate;
         }
-
     }
 }

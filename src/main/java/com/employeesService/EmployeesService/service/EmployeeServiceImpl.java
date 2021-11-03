@@ -1,40 +1,65 @@
 package com.employeesService.EmployeesService.service;
 
+import com.employeesService.EmployeesService.exception.DepartmentNotFoundException;
 import com.employeesService.EmployeesService.exception.EmployeeNotFoundException;
+import com.employeesService.EmployeesService.model.Department;
+import com.employeesService.EmployeesService.model.DepartmentEmployee;
 import com.employeesService.EmployeesService.model.Employee;
+import com.employeesService.EmployeesService.repository.DepartmentRepository;
 import com.employeesService.EmployeesService.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
         this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
     public Employee save(Employee employee) {
-        return employeeRepository.save(employee);
+        return this.employeeRepository.save(employee);
     }
 
     @Override
-    public List<Employee> getAll() {
-        return employeeRepository.findAll();
-    }
-
-    @Override
-    public Employee getById(Long empNo) {
-        Employee employee = employeeRepository.findById(empNo).orElseThrow(() -> new EmployeeNotFoundException(empNo));
+    @Transactional
+    public Employee addEmployeeToDepartment(String deptNo, Long empNo, LocalDate fromDate) {
+        Department department = this.departmentRepository.findById(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
+        Employee employee = this.employeeRepository.findById(empNo).orElseThrow(() -> new EmployeeNotFoundException(empNo));
+        department.addEmployee(employee, fromDate);
+        this.departmentRepository.save(department);
         return employee;
     }
 
     @Override
+    public List<DepartmentEmployee> listDepartmentEmployees(String deptNo) {
+        Department department = this.departmentRepository.findByIdWithEmployees(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
+        return department.getEmployees();
+    }
+
+    @Override
+    public List<Employee> getAll() {
+        return this.employeeRepository.findAll();
+    }
+
+    @Override
+    public Employee getById(Long empNo) {
+        Employee employee = this.employeeRepository.findById(empNo).orElseThrow(() -> new EmployeeNotFoundException(empNo));
+        return employee;
+    }
+
+    @Override
+    @Transactional
     public Employee update(Long empNo, Employee employee) {
         Employee foundEmployee = this.employeeRepository.findById(empNo).orElseThrow(() -> new EmployeeNotFoundException(empNo));
         foundEmployee.setFirstName(employee.getFirstName());
@@ -46,7 +71,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
     public void delete(Long empNo) {
-        employeeRepository.deleteById(empNo);
+        this.employeeRepository.deleteById(empNo);
+    }
+
+    @Override
+    @Transactional
+    public void deleteEmployeeFromDepartment(String deptNo, Long empNo, LocalDate toDate) {
+        Department department = this.departmentRepository.findByIdWithEmployees(deptNo).orElseThrow(() -> new DepartmentNotFoundException(deptNo));
+        department.deleteEmployee(empNo, toDate);
+        this.departmentRepository.save(department);
     }
 }

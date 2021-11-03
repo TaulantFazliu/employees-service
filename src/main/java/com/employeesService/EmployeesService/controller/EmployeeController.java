@@ -33,7 +33,6 @@ public class EmployeeController {
         return employeeService.getById(empNo);
     }
 
-
     @PutMapping("/{empNo}")
     public Employee updateEmployee(@PathVariable Long empNo, @RequestBody Employee employee) {
         return employeeService.update(empNo, employee);
